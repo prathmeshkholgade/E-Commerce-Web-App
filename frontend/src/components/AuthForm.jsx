@@ -23,6 +23,8 @@ export default function AuthForm() {
   const Navigate = useNavigate();
   const userError = useSelector((state) => state.user.error);
   const user = useSelector((state) => state.user.user);
+  const rediretUrl = useSelector((state) => state.user?.rediretUrl);
+  console.log(rediretUrl);
   console.log(user);
 
   // useEffect(() => {

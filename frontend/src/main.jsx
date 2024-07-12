@@ -13,6 +13,7 @@ import UserProvider from "./components/UserProvider.jsx";
 import { Provider } from "react-redux";
 import { store } from "./store/store.js";
 import Cart from "./components/Cart.jsx";
+import Upload from "./components/Upload.jsx";
 const domain = import.meta.env.VITE_DOMAIN;
 const clientId = import.meta.env.VITE_CLIENTID;
 const router = createBrowserRouter([
@@ -49,6 +50,7 @@ const router = createBrowserRouter([
         path: "/cart",
         element: <Cart />,
       },
+      { path: "/upload", element: <Upload /> },
     ],
   },
 ]);

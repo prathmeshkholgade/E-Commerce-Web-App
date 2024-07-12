@@ -59,7 +59,7 @@ export default function ProductDetails() {
           <div className="w-2/3 flex flex-wrap">
             <div className="p-4">
               <img
-                src={product.imageUrl}
+                src={product.imageUrl?.url}
                 alt=""
                 className="w-96 h-96 object-cover"
               />

@@ -21,9 +21,17 @@ module.exports.signUp = async (req, res, next) => {
 };
 
 module.exports.login = async (req, res) => {
-  console.log("this is user info");
+  // console.log("this is user info");
   const { hash, salt, ...userWithOutSesitiveInfo } = req.user.toObject();
-  res.status(200).json(userWithOutSesitiveInfo);
+  // const redirectUrl = {
+  //   url: res.locals.redirectUrl,
+  // };
+  res
+    .status(200)
+    .json({
+      userData: userWithOutSesitiveInfo,
+      redirectUrl: res.locals.redirectUrl,
+    });
 };
 
 module.exports.logOut = (req, res, next) => {

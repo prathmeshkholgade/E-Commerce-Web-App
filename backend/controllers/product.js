@@ -1,4 +1,5 @@
 const Product = require("../model/Product");
+const ExpressError = require("../utils/ExpressError");
 
 module.exports.index = async (req, res) => {
   try {
@@ -17,17 +18,27 @@ module.exports.showProduct = async (req, res, next) => {
   res.status(200).json(data);
 };
 module.exports.addData = async (req, res, next) => {
-  console.log("user:", req.user);
+  let url = req.file.path;
+  let fileName = req.file.filename;
+  console.log(url, "..", fileName);
   const newProduct = new Product(req.body);
   newProduct.owner = req.user._id;
+  newProduct.imageUrl = { url, fileName };
   const savedProduct = await newProduct.save();
   res.status(200).json(savedProduct);
 };
 module.exports.updateProduct = async (req, res) => {
   const updatedProduct = await Product.findByIdAndUpdate(
     req.params.id,
-    req.body
+    req.body,
   );
+  if (typeof req.file !== "undefined") {
+    console.log("trying to update product listing");
+    let url = req.file.path;
+    let fileName = req.file.filename;
+    updatedProduct.imageUrl = { url, fileName };
+    await updatedProduct.save();
+  }
   res.status(200).json(updatedProduct);
 };
 module.exports.destoryProduct = async (req, res, next) => {

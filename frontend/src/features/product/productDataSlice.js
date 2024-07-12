@@ -4,6 +4,8 @@ import axios from "axios";
 const apiUrl = import.meta.env.VITE_API_URl;
 axios.defaults.withCredentials = true;
 
+// axios.defaults.headers.post["Content-Type"] = "multipart/form-data";
+
 export const fetchProductData = createAsyncThunk(
   "products/fetchData",
   async () => {
@@ -24,7 +26,13 @@ export const addData = createAsyncThunk(
   "products/addData",
   async (productData, thunkApi) => {
     try {
-      const response = await axios.post(`${apiUrl}/products`, productData);
+      const response = await axios.post(`${apiUrl}/products`, productData, 
+        {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
       return response.data;
     } catch (error) {
       return thunkApi.rejectWithValue(error.response.data);
@@ -51,7 +59,7 @@ export const updatedProduct = createAsyncThunk(
   "products/updatedProduct",
   async ({ id, product }, thunkApi) => {
     try {
-      const response = await axios.put(`${apiUrl}/products/${id}`, product);
+      const response = await axios.put(`${apiUrl}/products/${id}`, product,{withCredentials:true});
       return response.data;
     } catch (error) {
       console.log(error);

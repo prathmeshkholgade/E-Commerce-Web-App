@@ -26,6 +26,7 @@ export const loginUser = createAsyncThunk(
       const response = await axios.post(loginUrl, userData, {
         withCredentials: true,
       });
+      console.log(response);
       return response.data;
     } catch (error) {
       return thunkApi.rejectWithValue(error.response.data);
@@ -59,6 +60,7 @@ const userSlice = createSlice({
     user: null,
     status: "",
     error: "",
+    rediretUrl:null,
   },
   reducers: {
     clearError: (state, action) => {
@@ -82,7 +84,8 @@ const userSlice = createSlice({
       })
       .addCase(loginUser.fulfilled, (state, action) => {
         state.status = "succeeded";
-        state.user = action.payload;
+        state.user = action.payload.userData;
+        state.rediretUrl=action.payload.redirectUrl
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.status = "failed";

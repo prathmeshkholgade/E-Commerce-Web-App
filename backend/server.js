@@ -1,3 +1,6 @@
+if (process.env.NODE_ENV != "production") {
+  require("dotenv").config();
+}
 const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
@@ -14,6 +17,7 @@ const { isLoggedIn, isOwner } = require("./middleware/middleware");
 const productRoutes = require("./routes/productRoutes");
 const cartRoutes = require("./routes/cartRoutes");
 const userRoutes = require("./routes/user");
+
 main()
   .then(() => console.log("db connected"))
   .catch((err) => console.log(err));

@@ -22,7 +22,7 @@ export default function ProductCreate() {
     handleSubmit,
     watch,
     reset,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm({
     mode: "onChange", // or "all" for validation on all events
   });
@@ -47,19 +47,35 @@ export default function ProductCreate() {
     }
   }, [product, id, reset]);
 
+  const setdata = async (data) => {
+    const datas = new FormData();
+    datas.append("name", data.name);
+    datas.append("description", data.description);
+    datas.append("price", data.price);
+    if (data.imageUrl[0]) {
+      datas.append("imageUrl", data.imageUrl[0]);
+    }
+    datas.append("category", data.category);
+    return datas;
+  };
+
   const onsubmit = async (data) => {
-    // console.log(data);
     try {
       if (id) {
         try {
-          await dispatch(updatedProduct({ id, product: data })).unwrap();
+          const productData = await setdata(data);
+          const res = await dispatch(
+            updatedProduct({ id, product: productData })
+          ).unwrap();
           navigate(`/product/${id}`);
           dispatch(setMessage("Product Details Updated"));
         } catch (error) {
           dispatch(setMessage(error || "error in edition"));
         }
       } else {
-        await dispatch(addData(data)).unwrap();
+        let productData = await setdata(data);
+        console.log(productData);
+        await dispatch(addData(productData)).unwrap();
         await dispatch(fetchProductData()).unwrap();
         navigate("/");
         dispatch(setMessage("New Product Added"));
@@ -80,7 +96,7 @@ export default function ProductCreate() {
         className="w-2/4 "
         onSubmit={handleSubmit(onsubmit)}
         noValidate
-        
+        encType="multipart/form-data"
       >
         <h1 className="p-2 text-lg text-center">{id ? "Edit" : "Create"}</h1>
         <div className="mb-4">
@@ -92,7 +108,6 @@ export default function ProductCreate() {
               errors.name ? "border-2 border-red-700 " : ""
             }`}
             placeholder="Enter title"
-            // onChange={handleinputChange}
             {...register("name", {
               required: {
                 value: true,
@@ -118,12 +133,10 @@ export default function ProductCreate() {
                 message: "description is too short",
               },
             })}
-            // value={productData.description}
             className={`w-full  p-2 rounded-lg bg-slate-200 ${
               errors.name ? "border-2 border-red-700 " : ""
             }`}
             placeholder="Enter description"
-            // onChange={handleinputChange}
             required
           />
           {errors.description && (
@@ -131,13 +144,15 @@ export default function ProductCreate() {
           )}
         </div>
         <div className="mb-4">
-          <label htmlFor="imgage">imgageUrl</label>
+          <label htmlFor="imgage">Upload Product Image</label>
           <input
-            type="text"
-            id="imgage"
+            type="file"
+            id="imageUrl"
+            name="imageUrl"
+            accept="image/"
             {...register("imageUrl", {
               required: {
-                value: true,
+                value: id ? false : true,
                 message: "Please enter img url",
               },
             })}
@@ -145,13 +160,19 @@ export default function ProductCreate() {
               errors.name ? "border-2 border-red-700 " : ""
             }`}
             placeholder="Enter imgUrl"
-            // onChange={handleinputChange}
-            required
           />
           {errors.imageUrl && (
             <p className="text-red-700">{errors.imageUrl.message}</p>
           )}
         </div>
+
+        {id && product && (
+          <div>
+            <h2>old image</h2>
+            <img src={product.imageUrl?.url} className="w-40 h-40 object-cover" alt="" />
+          </div>
+        )}
+
         <div className="mb-4">
           <label htmlFor="price">Price</label>
           <input
@@ -171,7 +192,6 @@ export default function ProductCreate() {
               errors.name ? "border-2 border-red-700 " : ""
             }`}
             placeholder="Enter price"
-            // onChange={handleinputChange}
             required
           />
           {errors.price && (
@@ -193,7 +213,6 @@ export default function ProductCreate() {
               errors.name ? "border-2 border-red-700 " : ""
             }`}
             placeholder="Enter category"
-            // onChange={handleinputChange}
             required
           />
           {errors.category && (
@@ -202,7 +221,10 @@ export default function ProductCreate() {
         </div>
 
         <div className="text-center ">
-          <button className="w-2/3 bg-slate-200 p-2 text-center rounded-lg hover:bg-gray-400">
+          <button
+            className="w-2/3 bg-slate-200 p-2 text-center rounded-lg hover:bg-gray-400"
+            disabled={isSubmitting ? true : false}
+          >
             {id ? "Edit" : "Create"}
           </button>
         </div>

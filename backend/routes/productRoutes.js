@@ -7,18 +7,25 @@ const {
 } = require("../middleware/middleware");
 const productController = require("../controllers/product");
 const router = express.Router();
+const multer = require("multer");
+const { cloudinary, storage } = require("../CloudConfig");
 
+const upload = multer({ storage });
 router
   .route("/")
   .get(asyncWrap(productController.index))
-  .post(isLoggedIn, asyncWrap(productController.addData));
+  .post(
+    isLoggedIn,
+    upload.single("imageUrl"),
+    asyncWrap(productController.addData)
+  );
 
 router
   .route("/:id")
   .put(
     isLoggedIn,
     isOwner,
-    validateProduct,
+    upload.single("imageUrl"),
     asyncWrap(productController.updateProduct)
   )
   .get(asyncWrap(productController.showProduct))
